@@ -1,40 +1,70 @@
 import streamlit as st
 
-st.set_page_config(page_title="Quiz de Villanas Disney", layout="centered")
+st.set_page_config(page_title="Juego de Villanas Disney", page_icon="👑", layout="centered")
 
-# Título
-st.title("👑 Quiz de Villanas Disney")
-st.subheader("¿Puedes acertar las 5 preguntas? ¡Si lo haces, te lloverán pizzas! 🍕")
+st.title("👑 Juego de Villanas de Disney")
+st.subheader("¿Cuánto sabes sobre las más icónicas villanas?")
 
-# Preguntas y respuestas correctas
-preguntas = {
-    "¿Cuál es el nombre de la villana en '101 dálmatas'?": "Cruella de Vil",
-    "¿Quién envenena a Blancanieves?": "La Reina Malvada",
-    "¿Qué villana se transforma en dragón en 'La Bella Durmiente'?": "Maléfica",
-    "¿Cuál es la villana en 'La Sirenita'?": "Úrsula",
-    "¿Quién encierra a Rapunzel en una torre?": "Madre Gothel"
-}
+questions = [
+    {
+        "question": "¿Cuál es el nombre de la villana en 'La Sirenita'?",
+        "options": ["Maléfica", "Úrsula", "Cruella de Vil", "Madre Gothel"],
+        "answer": "Úrsula"
+    },
+    {
+        "question": "¿Qué villana quiere la piel de 101 dálmatas?",
+        "options": ["Cruella de Vil", "Yzma", "Madame Medusa", "Lady Tremaine"],
+        "answer": "Cruella de Vil"
+    },
+    {
+        "question": "¿Quién es la malvada madrastra de Blancanieves?",
+        "options": ["La Reina Malvada", "Úrsula", "Maléfica", "Gothel"],
+        "answer": "La Reina Malvada"
+    },
+    {
+        "question": "¿Qué villana lanza una maldición en 'La Bella Durmiente'?",
+        "options": ["Cruella de Vil", "Madre Gothel", "Maléfica", "Yzma"],
+        "answer": "Maléfica"
+    },
+    {
+        "question": "¿Cómo se llama la villana de 'Enredados'?",
+        "options": ["Gothel", "Maléfica", "Cruella de Vil", "La Reina de Corazones"],
+        "answer": "Gothel"
+    }
+]
 
-respuestas_usuario = {}
-correctas = 0
+score = 0
 
 with st.form("quiz_form"):
-    for pregunta, respuesta_correcta in preguntas.items():
-        respuesta = st.text_input(pregunta)
-        respuestas_usuario[pregunta] = respuesta
+    for idx, q in enumerate(questions):
+        user_answer = st.radio(f"{idx+1}. {q['question']}", q["options"], key=idx)
+        if user_answer == q["answer"]:
+            score += 1
 
-    enviado = st.form_submit_button("Enviar respuestas")
+    submitted = st.form_submit_button("Enviar respuestas")
 
-# Validación
-if enviado:
-    for pregunta, respuesta_correcta in preguntas.items():
-        if respuestas_usuario[pregunta].strip().lower() == respuesta_correcta.lower():
-            correctas += 1
+if submitted:
+    st.write(f"Tu puntuación es: **{score} / {len(questions)}**")
 
-    st.write(f"✅ Respuestas correctas: **{correctas} / 5**")
-
-    if correctas == 5:
-        st.success("🎉 ¡Perfecto! ¡Te mereces una lluvia de pizzas! 🍕")
-        st.image("pizza_rain.gif", caption="¡Felicidades!", use_column_width=True)
-    else:
-        st.warning("😢 No acertaste todas... ¡Intenta de nuevo!")
+    if score == len(questions):
+        st.success("¡Felicidades! ¡Acertaste todas las preguntas! 🎉")
+        st.balloons()
+        st.markdown("""
+        <style>
+        @keyframes pizzaRain {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            100% { transform: translateY(800px) rotate(360deg); opacity: 1; }
+        }
+        .pizza {
+            position: fixed;
+            top: 0;
+            font-size: 40px;
+            animation: pizzaRain 3s linear infinite;
+        }
+        </style>
+        <div class="pizza">🍕</div>
+        <div class="pizza" style="left: 20%;">🍕</div>
+        <div class="pizza" style="left: 40%;">🍕</div>
+        <div class="pizza" style="left: 60%;">🍕</div>
+        <div class="pizza" style="left: 80%;">🍕</div>
+        """, unsafe_allow_html=True)
